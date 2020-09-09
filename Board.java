@@ -4,6 +4,10 @@
  *  Description:
  **************************************************************************** */
 
+import edu.princeton.cs.algs4.In;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 public class Board {
     private final int[][] board;
     private final int[][] goalBoard;
@@ -12,10 +16,10 @@ public class Board {
     // where tiles[row][col] = tile at (row, col)
     public Board(int[][] tiles) {
         checkInputCorrectnessOf(tiles);
+        board = tiles.clone();
         goalBoard = createGoalBoardFor(tiles);
-        board = tiles;
     }
-
+    
     private void checkInputCorrectnessOf(int[][] tiles) {
         if (tiles == null)
             throw new IllegalArgumentException("input can't be null");
@@ -58,20 +62,32 @@ public class Board {
 
     // string representation of this board
     public String toString() {
-        System.out.println();
-        return null;
+        StringBuilder sb = new StringBuilder();
+        sb.append(board.length).append("\n");
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                sb.append(" ").append(board[i][j]);
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
     // board dimension n
     public int dimension() {
-
-        return 0;
+        return board.length;
     }
 
     // number of tiles out of place
     public int hamming() {
-
-        return 0;
+        int countOutOfPlace = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] != goalBoard[i][j])
+                    countOutOfPlace++;
+            }
+        }
+        return countOutOfPlace;
     }
 
     // sum of Manhattan distances between tiles and goal
@@ -82,8 +98,13 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
-
-        return false;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] != goalBoard[i][j])
+                    return false;
+            }
+        }
+        return true;
     }
 
     // does this board equal y?
@@ -105,8 +126,37 @@ public class Board {
     }
 
     // unit testing (not graded)
-    public static void main(String[] args) {
+    // public static void main(String[] args) {
+    //
+    // }
 
+    static class BoardTest {
+        int[][] inputTiles;
+        Board testBoard1;
+
+
+        @BeforeEach
+        void setUp() {
+            In in = new In("data/puzzle3x3-00.txt");
+            int n = in.readInt();
+            inputTiles = new int[n][n];
+
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    inputTiles[i][j] = in.readInt();
+                }
+            }
+            testBoard1 = new Board(inputTiles);
+        }
+
+        @Test
+        void testToString() {
+            System.out.println(testBoard1);
+        }
+
+        @Test
+        void isGoal() {
+        }
     }
 
 }
