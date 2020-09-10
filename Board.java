@@ -98,6 +98,9 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
+        if (board.length != goalBoard.length) {
+            return false;
+        }
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
                 if (board[i][j] != goalBoard[i][j])
@@ -108,9 +111,18 @@ public class Board {
     }
 
     // does this board equal y?
-    public boolean equals(Object y) {
-
-        return false;
+    public boolean equals(Board that) {
+        if (board.length != that.board.length ||
+                board[0].length != that.board[0].length) {
+            return false;
+        }
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] != that.board[i][j])
+                    return false;
+            }
+        }
+        return true;
     }
 
     // all neighboring boards
