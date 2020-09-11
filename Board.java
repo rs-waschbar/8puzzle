@@ -157,6 +157,21 @@ public class Board {
         return true;
     }
 
+    // a board that is obtained by exchanging any pair of tiles
+    public Board twin() {
+        Board twinBoard;
+        int[][] twin = cloneThisData();
+
+        if (twin[0][0] != 0 && twin[0][1] != 0) {
+            twinBoard = createMovedBoard(Direction.RIGHT, 0, 0);
+        }
+        else {
+            twinBoard = createMovedBoard(Direction.LEFT, twin.length - 1,
+                                         twin.length - 1);
+        }
+        return twinBoard;
+    }
+
     // all neighboring boards
     public Iterable<Board> neighbors() {
         int emptyRow = -1;
@@ -198,16 +213,16 @@ public class Board {
         }
 
         return nextBoards;
-
     }
 
-    private Board createMovedBoard(Direction dir, int emptyRow, int emptyCol) {
+    private Board createMovedBoard(Direction dir, int row, int col) {
         int[][] movedBoard = cloneThisData();
-        int tileRow = emptyRow + dir.dRow;
-        int tileCol = emptyCol + dir.dCol;
+        int tileRow = row + dir.dRow;
+        int tileCol = col + dir.dCol;
 
-        movedBoard[emptyRow][emptyCol] = movedBoard[tileRow][tileCol];
-        movedBoard[tileRow][tileCol] = 0;
+        int temp = movedBoard[tileRow][tileCol];
+        movedBoard[row][col] = movedBoard[tileRow][tileCol];
+        movedBoard[tileRow][tileCol] = temp;
 
         return new Board(movedBoard);
     }
@@ -243,11 +258,7 @@ public class Board {
         }
     }
 
-    // a board that is obtained by exchanging any pair of tiles
-    public Board twin() {
 
-        return null;
-    }
 
     // unit testing (not graded)
     public static void main(String[] args) {
