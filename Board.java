@@ -5,8 +5,12 @@
  **************************************************************************** */
 
 import edu.princeton.cs.algs4.In;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Board {
     private final int[][] board;
@@ -83,8 +87,9 @@ public class Board {
         int countOutOfPlace = 0;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
-                if (board[i][j] != goalBoard[i][j])
+                if (board[i][j] != goalBoard[i][j]) {
                     countOutOfPlace++;
+                }
             }
         }
         return countOutOfPlace;
@@ -93,7 +98,29 @@ public class Board {
     // sum of Manhattan distances between tiles and goal
     public int manhattan() {
 
+        int sumDistances = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] != goalBoard[i][j]) {
+                    int row = i;
+                    int col = j;
+                    int goalRow = (board[i][j] - 1) / board.length;
+                    int goalCol = (board[i][j] - 1) % board.length;
+
+                    sumDistances += Math.abs(goalRow - row);
+                    sumDistances += Math.abs(goalCol - col);
+                }
+            }
+        }
+        return sumDistances;
+    }
+
+    private int calculateDistance(int val, int row, int col) {
+        int goalRow = (val - 1) / board.length;
+        int goalCol = (val - 1) % board.length;
+
         return 0;
+
     }
 
     // is this board the goal board?
@@ -103,23 +130,28 @@ public class Board {
         }
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
-                if (board[i][j] != goalBoard[i][j])
+                if (board[i][j] != goalBoard[i][j]) {
                     return false;
+                }
             }
         }
         return true;
     }
 
-    // does this board equal y?
-    public boolean equals(Board that) {
-        if (board.length != that.board.length ||
-                board[0].length != that.board[0].length) {
+    public boolean equals(Object that) {
+        if (this == that) return true;
+        if (that == null || getClass() != that.getClass()) return false;
+        Board thatBoard = (Board) that;
+
+        if (board.length != thatBoard.board.length ||
+                board[0].length != thatBoard.board[0].length) {
             return false;
         }
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
-                if (board[i][j] != that.board[i][j])
+                if (board[i][j] != thatBoard.board[i][j]) {
                     return false;
+                }
             }
         }
         return true;
@@ -127,8 +159,88 @@ public class Board {
 
     // all neighboring boards
     public Iterable<Board> neighbors() {
+        int emptyRow = -1;
+        int emptyCol = -1;
 
-        return null;
+        search:
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                if (board[i][j] == 0) {
+                    emptyRow = i;
+                    emptyCol = j;
+                    break search;
+                }
+            }
+        }
+        return allPossibleMoves(emptyRow, emptyCol);
+    }
+
+    private List<Board> allPossibleMoves(int emptyRow, int emptyCol) {
+        List<Board> nextBoards = new ArrayList<>();
+
+        if (emptyRow == -1) {
+            return nextBoards;
+        }
+        int lowBorder = 0;
+        int hiBorder = board.length - 1;
+
+        if (emptyRow != lowBorder) {
+            nextBoards.add(createMovedBoard(Direction.UP, emptyRow, emptyCol));
+        }
+        if (emptyRow != hiBorder) {
+            nextBoards.add(createMovedBoard(Direction.DOWN, emptyRow, emptyCol));
+        }
+        if (emptyCol != lowBorder) {
+            nextBoards.add(createMovedBoard(Direction.LEFT, emptyRow, emptyCol));
+        }
+        if (emptyCol != hiBorder) {
+            nextBoards.add(createMovedBoard(Direction.RIGHT, emptyRow, emptyCol));
+        }
+
+        return nextBoards;
+
+    }
+
+    private Board createMovedBoard(Direction dir, int emptyRow, int emptyCol) {
+        int[][] movedBoard = cloneThisData();
+        int tileRow = emptyRow + dir.dRow;
+        int tileCol = emptyCol + dir.dCol;
+
+        movedBoard[emptyRow][emptyCol] = movedBoard[tileRow][tileCol];
+        movedBoard[tileRow][tileCol] = 0;
+
+        return new Board(movedBoard);
+    }
+
+    private int[][] cloneThisData() {
+        int[][] copyBoard = new int[board.length][board.length];
+        for (int i = 0; i < board.length; i++) {
+            copyBoard[i] = board[i].clone();
+        }
+        return copyBoard;
+    }
+
+    private enum Direction {
+        UP(-1, 0),
+        DOWN(+1, 0),
+        LEFT(0, -1),
+        RIGHT(0, +1);
+
+        int dRow;
+        int dCol;
+
+        Direction(int dRow, int dCol) {
+            this.dRow = dRow;
+            this.dCol = dCol;
+        }
+
+        public int getDRow() {
+            return dRow;
+        }
+
+        public int getDCol() {
+            return dCol;
+        }
     }
 
     // a board that is obtained by exchanging any pair of tiles
@@ -138,9 +250,9 @@ public class Board {
     }
 
     // unit testing (not graded)
-    // public static void main(String[] args) {
-    //
-    // }
+    public static void main(String[] args) {
+
+    }
 
     static class BoardTest {
         int[][] inputTiles;
@@ -164,10 +276,13 @@ public class Board {
         @Test
         void testToString() {
             System.out.println(testBoard1);
+
         }
 
         @Test
         void isGoal() {
+            // System.out.println(testBoard1.isGoal());
+            Assert.assertTrue(testBoard1.isGoal());
         }
     }
 
