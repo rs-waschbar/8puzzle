@@ -5,41 +5,35 @@
  *              week 4 assignment
  **************************************************************************** */
 
-import edu.princeton.cs.algs4.In;
-import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Board {
-    private final int[][] board;
-    private final int[][] goalBoard;
+    private final int[] board;
+    private int size;
 
     // create a board from an n-by-n array of tiles,
     // where tiles[row][col] = tile at (row, col)
     public Board(int[][] tiles) {
         checkInputCorrectnessOf(tiles);
-        board = tiles.clone();
-        goalBoard = createGoalBoardFor(tiles);
+        board = createBoardFrom(tiles);
     }
     
     private void checkInputCorrectnessOf(int[][] tiles) {
         if (tiles == null)
             throw new IllegalArgumentException("input can't be null");
 
-        int rows = tiles.length;
+        size = tiles.length;
         int columns = tiles[0].length;
-        if (rows != columns) {
+        if (size != columns) {
             throw new IllegalArgumentException("input tiles must be square");
         }
 
-        int capasity = rows * rows;
-        int[] testArr = new int[capasity];
+        int capacity = size * size;
+        int[] testArr = new int[capacity];
 
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < rows; j++) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 testArr[tiles[i][j]]++;
             }
         }
@@ -51,27 +45,25 @@ public class Board {
         }
     }
 
-    private int[][] createGoalBoardFor(int[][] tiles) {
-        int[][] goal = new int[tiles.length][tiles.length];
-        int num = 0;
+    private int[] createBoardFrom(int[][] tiles) {
+        int[] newBoard = new int[size * size];
 
-        for (int i = 0; i < tiles.length; i++) {
-            for (int j = 0; j < tiles.length; j++) {
-                goal[i][j] = ++num;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                newBoard[i * size + j] = tiles[i][j];
             }
         }
-        goal[tiles.length - 1][tiles.length - 1] = 0;
-
-        return goal;
+        return newBoard;
     }
 
     // string representation of this board
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(board.length).append("\n");
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                sb.append(" ").append(board[i][j]);
+        sb.append(size).append("\n");
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                sb.append(" ").append(board[i * size + j]);
             }
             sb.append("\n");
         }
@@ -80,17 +72,16 @@ public class Board {
 
     // board dimension n
     public int dimension() {
-        return board.length;
+        return size;
     }
 
     // number of tiles out of place
     public int hamming() {
         int countOutOfPlace = 0;
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                if (board[i][j] != goalBoard[i][j] && board[i][j] != 0) {
-                    countOutOfPlace++;
-                }
+
+        for (int i = 0; i < board.length - 1; i++) {
+            if (board[i] != i + 1) {
+                countOutOfPlace++;
             }
         }
         return countOutOfPlace;
@@ -100,44 +91,26 @@ public class Board {
     public int manhattan() {
         int sumDistances = 0;
         for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                if (board[i][j] != goalBoard[i][j] && board[i][j] != 0) {
-                    sumDistances += calculateGoalDistance(board, i, j);
-                }
+            if (board[i] != i + 1 && board[i] != 0) {
+                sumDistances += calculateGoalDistance(board[i], i);
             }
+
         }
         return sumDistances;
     }
 
-    private int calculateGoalDistance(int[][] tiles, int row, int col) {
-        int distance = 0;
-        int goalRow;
-        int goalCol;
+    private int calculateGoalDistance(int val, int index) {
+        int distRow = Math.abs((val - 1) / size - index / size);
+        int distCol = Math.abs((val - 1) % size - index % size);
 
-        if (tiles[row][col] == 0) {
-            goalRow = tiles.length - 1;
-            goalCol = tiles.length - 1;
-        } else {
-            goalRow = (tiles[row][col] - 1) / tiles.length;
-            goalCol = (tiles[row][col] - 1) % tiles.length;
-        }
-
-        distance += Math.abs(goalRow - row);
-        distance += Math.abs(goalCol - col);
-
-        return distance;
+        return distRow + distCol;
     }
 
     // is this board the goal board?
     public boolean isGoal() {
-        if (board.length != goalBoard.length) {
-            return false;
-        }
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                if (board[i][j] != goalBoard[i][j]) {
-                    return false;
-                }
+        for (int i = 0; i < board.length - 1; i++) {
+            if (board[i] != i + 1) {
+                return false;
             }
         }
         return true;
@@ -148,15 +121,12 @@ public class Board {
         if (that == null || getClass() != that.getClass()) return false;
         Board thatBoard = (Board) that;
 
-        if (board.length != thatBoard.board.length ||
-                board[0].length != thatBoard.board[0].length) {
+        if (board.length != thatBoard.board.length) {
             return false;
         }
         for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                if (board[i][j] != thatBoard.board[i][j]) {
-                    return false;
-                }
+            if (board[i] != thatBoard.board[i]) {
+                return false;
             }
         }
         return true;
@@ -182,14 +152,11 @@ public class Board {
         int emptyRow = -1;
         int emptyCol = -1;
 
-        search:
         for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board.length; j++) {
-                if (board[i][j] == 0) {
-                    emptyRow = i;
-                    emptyCol = j;
-                    break search;
-                }
+            if (board[i] == 0) {
+                emptyRow = i / size;
+                emptyCol = i % size;
+                break;
             }
         }
         return allPossibleMoves(emptyRow, emptyCol);
@@ -202,7 +169,7 @@ public class Board {
             return nextBoards;
         }
         int lowBorder = 0;
-        int hiBorder = board.length - 1;
+        int hiBorder = size - 1;
 
         if (emptyRow != lowBorder) {
             nextBoards.add(createMovedBoard(Direction.UP, emptyRow, emptyCol));
@@ -233,12 +200,15 @@ public class Board {
     }
 
     private int[][] cloneThisData() {
-        int[][] copyBoard = new int[board.length][board.length];
-        for (int i = 0; i < board.length; i++) {
-            copyBoard[i] = board[i].clone();
+        int[][] copyBoard = new int[size][size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                copyBoard[i][j] = board[i * size + j];
+            }
         }
         return copyBoard;
     }
+
 
     private enum Direction {
         UP(-1, 0),
@@ -263,10 +233,8 @@ public class Board {
         }
     }
 
-
-
     // unit testing (not graded)
-   /* public static void main(String[] args) {
+    public static void main(String[] args) {
         int[][] inputTiles = {
                 {1, 2, 3},
                 {4, 0, 6},
@@ -276,8 +244,8 @@ public class Board {
 
         System.out.println(testBoard);
 
-    }*/
-
+    }
+/*
     static class BoardTest {
         int[][] inputTiles1;
         int[][] wrongInputTiles1;
@@ -337,6 +305,7 @@ public class Board {
         @Test
         void testToString() {
             System.out.println(testBoard1);
+            System.out.println(testBoard2);
 
         }
 
@@ -390,5 +359,5 @@ public class Board {
             Assert.assertTrue(testBoard1.isGoal());
         }
     }
-
+*/
 }
