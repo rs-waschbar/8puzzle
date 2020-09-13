@@ -1,8 +1,14 @@
-/* *****************************************************************************
- *  Name:
- *  Date:
- *  Description:
+/** *****************************************************************************
+ *  Name: Ruslan Zhdanov
+ *  Date: 09/13/2020
+ *  Description: Coursera Princeton Algorithms course part1
+ *              week 4 assignment
  **************************************************************************** */
+
+import edu.princeton.cs.algs4.In;
+import org.junit.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +88,7 @@ public class Board {
         int countOutOfPlace = 0;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
-                if (board[i][j] != goalBoard[i][j]) {
+                if (board[i][j] != goalBoard[i][j] && board[i][j] != 0) {
                     countOutOfPlace++;
                 }
             }
@@ -95,7 +101,7 @@ public class Board {
         int sumDistances = 0;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
-                if (board[i][j] != goalBoard[i][j]) {
+                if (board[i][j] != goalBoard[i][j] && board[i][j] != 0) {
                     sumDistances += calculateGoalDistance(board, i, j);
                 }
             }
@@ -258,11 +264,19 @@ public class Board {
     }
 
 
-    /*
-    // unit testing (not graded)
-    public static void main(String[] args) {
 
-    }
+    // unit testing (not graded)
+   /* public static void main(String[] args) {
+        int[][] inputTiles = {
+                {1, 2, 3},
+                {4, 0, 6},
+                {7, 8, 5},
+                };
+        Board testBoard = new Board(inputTiles);
+
+        System.out.println(testBoard);
+
+    }*/
 
     static class BoardTest {
         int[][] inputTiles1;
@@ -329,15 +343,15 @@ public class Board {
         @Test
         void testHamming() {
             Assert.assertEquals(0, testBoard1.hamming());
-            Assert.assertEquals(9, testBoard2.hamming());
-            Assert.assertEquals(2, testBoard3.hamming());
+            Assert.assertEquals(8, testBoard2.hamming());
+            Assert.assertEquals(1, testBoard3.hamming());
         }
 
         @Test
         void testManhattan() {
             Assert.assertEquals(0, testBoard1.manhattan());
-            Assert.assertEquals(16, testBoard2.manhattan());
-            Assert.assertEquals(8, testBoard3.manhattan());
+            Assert.assertEquals(12, testBoard2.manhattan());
+            Assert.assertEquals(4, testBoard3.manhattan());
         }
 
         @Test
@@ -376,5 +390,5 @@ public class Board {
             Assert.assertTrue(testBoard1.isGoal());
         }
     }
-*/
+
 }

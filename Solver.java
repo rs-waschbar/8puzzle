@@ -1,10 +1,10 @@
-/* *****************************************************************************
- *  Name:
- *  Date:
- *  Description:
+/** *****************************************************************************
+ *  Name: Ruslan Zhdanov
+ *  Date: 09/13/2020
+ *  Description: Coursera Princeton Algorithms course part1
+ *              week 4 assignment
  **************************************************************************** */
 
-import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.StdOut;
 
@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Solver {
-    SearchNode root;
-    LinkedList<Board> solutionBoards;
+    private final SearchNode root;
+    private LinkedList<Board> solutionBoards;
 
     private class SearchNode {
         Board board;
@@ -32,7 +32,6 @@ public class Solver {
         if (initial == null) {
             throw new IllegalArgumentException("Input board must not be null");
         }
-
         root = new SearchNode(initial, 0, null);
         solutionBoards = new LinkedList<>();
         findSolutionFor(root);
@@ -48,12 +47,8 @@ public class Solver {
         pQueue.insert(curr);
         pQueue.insert(currTwin);
 
-        System.out.println("before loop, is goal? " + searchingIsOver(curr));
-        System.out.println(!searchingIsOver(curr));
-        System.out.println(!pQueue.isEmpty());
 
         while (!searchingIsOver(curr) && !pQueue.isEmpty()) {
-            //System.out.println("in the loop");
             curr = pQueue.delMin();
             visited.add(curr.board);
 
@@ -64,14 +59,10 @@ public class Solver {
                 }
             }
         }
-        //System.out.println("before is cool " + curr.board.isGoal());
 
         if (searchingIsOver(curr)) {
-            System.out.println("this is cool");
-            System.out.println(curr.board);
             restorePathTo(curr);
         }
-
     }
 
     private void restorePathTo(SearchNode finalNode) {
@@ -82,7 +73,7 @@ public class Solver {
             curr = curr.prev;
         }
 
-        if (curr == root) {
+        if (curr.equals(root)) {
             path.addFirst(curr.board);
             solutionBoards = path;
         }
@@ -110,17 +101,17 @@ public class Solver {
     // test client (see below)
     public static void main(String[] args) {
         // create initial board from file
-        In in = new In(args[0]);
-        int n = in.readInt();
-        int[][] tiles = new int[n][n];
-        // int[][] tiles = {
-        //         {1, 2, 3},
-        //         {4, 0, 6},
-        //         {7, 8, 5},
-        //         };
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-                tiles[i][j] = in.readInt();
+        // In in = new In(args[0]);
+        // int n = in.readInt();
+        // int[][] tiles = new int[n][n];
+        int[][] tiles = {
+                {1, 2, 3},
+                {4, 0, 6},
+                {7, 8, 5},
+                };
+        // for (int i = 0; i < n; i++)
+        //     for (int j = 0; j < n; j++)
+        //         tiles[i][j] = in.readInt();
         Board initial = new Board(tiles);
 
         // solve the puzzle
