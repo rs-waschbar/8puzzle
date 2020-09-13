@@ -4,11 +4,6 @@
  *  Description:
  **************************************************************************** */
 
-import edu.princeton.cs.algs4.In;
-import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -224,7 +219,7 @@ public class Board {
         int tileRow = row + dir.dRow;
         int tileCol = col + dir.dCol;
 
-        int temp = movedBoard[tileRow][tileCol];
+        int temp = movedBoard[row][col];
         movedBoard[row][col] = movedBoard[tileRow][tileCol];
         movedBoard[tileRow][tileCol] = temp;
 
@@ -263,29 +258,66 @@ public class Board {
     }
 
 
-
+    /*
     // unit testing (not graded)
     public static void main(String[] args) {
 
     }
 
     static class BoardTest {
-        int[][] inputTiles;
+        int[][] inputTiles1;
+        int[][] wrongInputTiles1;
+        int[][] wrongInputTiles2 = {
+                {0, 1, 2},
+                {3, 4, 5},
+                {6, 7, 7},
+                };
+        int[][] inputTiles2 = {
+                {0, 1, 2},
+                {3, 4, 5},
+                {6, 7, 8},
+                };
+        int[][] inputTiles3 = {
+                {0, 2, 3},
+                {4, 5, 6},
+                {7, 8, 1},
+                };
+        int[][] inputTiles4 = {
+                {1, 2, 3},
+                {4, 0, 6},
+                {7, 8, 5},
+                };
+
         Board testBoard1;
+        Board testBoard2;
+        Board testBoard3;
+        Board testBoard4;
 
 
         @BeforeEach
         void setUp() {
             In in = new In("data/puzzle3x3-00.txt");
             int n = in.readInt();
-            inputTiles = new int[n][n];
+            inputTiles1 = new int[n][n];
 
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    inputTiles[i][j] = in.readInt();
+                    inputTiles1[i][j] = in.readInt();
                 }
             }
-            testBoard1 = new Board(inputTiles);
+            testBoard1 = new Board(inputTiles1);
+            testBoard2 = new Board(inputTiles2);
+            testBoard3 = new Board(inputTiles3);
+            testBoard4 = new Board(inputTiles4);
+            wrongInputTiles1 = new int[4][2];
+        }
+
+        @Test
+        void testBoardCreation() {
+            // must throw IllegalArgumentException from not squared
+            //Board input1 = new Board(wrongInputTiles1);
+            // must throw IllegalArgumentException from duplicates
+            //Board input2 = new Board(wrongInputTiles2);
         }
 
         @Test
@@ -295,10 +327,54 @@ public class Board {
         }
 
         @Test
+        void testHamming() {
+            Assert.assertEquals(0, testBoard1.hamming());
+            Assert.assertEquals(9, testBoard2.hamming());
+            Assert.assertEquals(2, testBoard3.hamming());
+        }
+
+        @Test
+        void testManhattan() {
+            Assert.assertEquals(0, testBoard1.manhattan());
+            Assert.assertEquals(16, testBoard2.manhattan());
+            Assert.assertEquals(8, testBoard3.manhattan());
+        }
+
+        @Test
+        void testNeighbors() {
+            System.out.println("**** test neighbours testBoard3: ");
+            for (Board board : testBoard3.neighbors()) {
+                System.out.println(board);
+            }
+
+            System.out.println("**** test neighbours testBoard4: ");
+            ArrayList<Board> board4neighbours = (ArrayList<Board>) testBoard4.neighbors();
+
+            for (Board board : testBoard4.neighbors()) {
+                System.out.println(board);
+            }
+
+            Assert.assertEquals(4, board4neighbours.size());
+        }
+
+        @Test
+        void testCreateMovedBoard() {
+            System.out.println("**** test createMovedBoard testBoard3: ");
+            System.out.println(testBoard3.createMovedBoard(Direction.DOWN, 0, 0));
+        }
+
+        @Test
+        void testTwin() {
+            System.out.println("**** test twin testBoard3: ");
+            System.out.println(testBoard3.twin());
+
+        }
+
+        @Test
         void isGoal() {
             // System.out.println(testBoard1.isGoal());
             Assert.assertTrue(testBoard1.isGoal());
         }
     }
-
+*/
 }
